@@ -7,7 +7,10 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="700dp"
+        tools:layout_editor_absoluteY="25dp"
+        tools:ignore="MissingConstraints">
+
 
         <TextView
             android:id="@+id/text_view_result"
@@ -18,4 +21,12 @@
             tools:layout_editor_absoluteY="185dp" />
 
     </androidx.core.widget.NestedScrollView>
+
+    <TextView
+        android:id="@+id/welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:layout_editor_absoluteX="176dp"
+        tools:layout_editor_absoluteY="1dp"
+        tools:ignore="MissingConstraints" />
 </androidx.constraintlayout.widget.ConstraintLayout>
