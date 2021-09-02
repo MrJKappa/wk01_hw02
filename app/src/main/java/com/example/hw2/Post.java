@@ -3,16 +3,14 @@ package com.example.hw2;
 import com.google.gson.annotations.SerializedName;
 
 public class Post {
-    private int user_id;
+    private int userId;
     private int id;
     private String title;
 
     @SerializedName("body")
     private String text;
 
-    public int getUser_id() {
-        return user_id;
-    }
+    public int getUserId() { return userId; }
 
     public int getId() {
         return id;

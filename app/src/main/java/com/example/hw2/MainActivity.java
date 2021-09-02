@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         return result;
     }
 
+
     public static boolean validate(String name, String pass) {
         boolean valid_username = false;
         boolean valid_password = false;
@@ -51,10 +52,10 @@ public class MainActivity extends AppCompatActivity {
         while (i.hasNext()) {
             Map.Entry mapElement = (Map.Entry)i.next();
             ArrayList<String> credential = (ArrayList<String>) mapElement.getValue();
-            String user = credential.get(0);
+            String username = credential.get(0);
             String password = credential.get(1);
 
-            if (user.equals(name) && password.equals(pass)) {
+            if (username.equals(name) && password.equals(pass)) {
                 valid_username = true;
                 valid_password = true;
                 break;
@@ -63,6 +64,30 @@ public class MainActivity extends AppCompatActivity {
 
         return valid_username && valid_password;
     }
+
+
+    public static ArrayList<String> getUser(String name, String pass) {
+        ArrayList<String> user = new ArrayList<>();
+
+        Iterator i = credentials.entrySet().iterator();
+        while (i.hasNext()) {
+            Map.Entry mapElement = (Map.Entry)i.next();
+            ArrayList<String> credential = (ArrayList<String>) mapElement.getValue();
+            String username = credential.get(0);
+            String password = credential.get(1);
+
+            if (username.equals(name) && password.equals(pass)) {
+                String id = String.valueOf(mapElement.getKey());
+                user.add(id);
+                user.add(username);
+                user.add(password);
+                return user;
+            }
+        }
+
+        return null;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,20 +104,24 @@ public class MainActivity extends AppCompatActivity {
                 String name = username.getText().toString();
                 String pass = password.getText().toString();
 
-                if(name.isEmpty()){
+                if(name.isEmpty() && pass.isEmpty()){
+                    Toast.makeText(MainActivity.this, "Please enter a Username and Password.", Toast.LENGTH_SHORT).show();
+                }
+
+                if (name.isEmpty()) {
                     Toast.makeText(MainActivity.this, "Please enter a Username.", Toast.LENGTH_SHORT).show();
                 }
 
-                if(pass.isEmpty()){
+                if (pass.isEmpty()) {
                     Toast.makeText(MainActivity.this, "Please enter a Password.", Toast.LENGTH_SHORT).show();
                 }
 
                 boolean isValid = validate(name, pass);
 
-                if(isValid){
+                if (isValid) {
+                    ArrayList<String> user = getUser(name, pass);
                     setContentView(R.layout.activity_posts);
                     textViewResult = findViewById(R.id.text_view_result);
-                    welcome = findViewById(R.id.welcome);
 
                     Retrofit retrofit = new Retrofit.Builder()
                             .baseUrl("https://jsonplaceholder.typicode.com/")
@@ -106,23 +135,24 @@ public class MainActivity extends AppCompatActivity {
                     call.enqueue(new Callback<List<Post>>() {
                         @Override
                         public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
-                            if (!response.isSuccessful()){
+                            if (!response.isSuccessful()) {
                                 textViewResult.setText("Code: " + response.code());
                                 return;
                             }
 
                             List<Post> posts = response.body();
+                            textViewResult.append("Welcome "+ name + "!\n\n");
+                            for (Post post : posts) {
+                                if(post.getUserId() == Integer.parseInt(user.get(0))) {
+                                    String content = "";
+                                    content += "ID: " + post.getId() + "\n";
+                                    content += "User ID: " + post.getUserId() + "\n";
+                                    content += "Title: " + post.getTitle() + "\n";
+                                    content += "Text: " + post.getText() + "\n\n";
 
-                            for (Post post:posts){
-                                String content = "";
-                                content += "ID: " + post.getId() + "\n";
-                                content += "User ID: " + post.getUser_id() + "\n";
-                                content += "Title: " + post.getTitle() + "\n";
-                                content += "Text: " + post.getText() + "\n\n";
-
-                                textViewResult.append(content);
+                                    textViewResult.append(content);
+                                }
                             }
-                            welcome.setText(name);
                         }
 
                         @Override
