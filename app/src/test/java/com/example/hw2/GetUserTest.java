@@ -13,12 +13,12 @@ import static org.junit.Assert.assertEquals;
  */
 public class GetUserTest {
     @Test
-    public void dneUser() {
+    public void getNonExistingUser() {
         assertEquals(null, MainActivity.getUser("Ad", "Password"));
     }
 
     @Test
-    public void existUser() {
+    public void getExistingUser() {
         ArrayList<String> user = (MainActivity.getUser("Admin", "Password"));
         assertEquals(3, user.size());
     }

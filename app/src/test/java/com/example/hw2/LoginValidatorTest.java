@@ -2,6 +2,8 @@ package com.example.hw2;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 
 /**
@@ -11,22 +13,27 @@ import static org.junit.Assert.*;
  */
 public class LoginValidatorTest {
     @Test
-    public void correctCredentials() {
-        assertEquals(true, MainActivity.validate("Admin", "Password"));
-    }
-
-    @Test
-    public void incorrectCredentials() {
-        assertEquals(false, MainActivity.validate("Adm1n", "Passwrd"));
-    }
-
-    @Test
-    public void incorrectUsername() {
-        assertEquals(false, MainActivity.validate("Adm1n", "Password"));
-    }
-
-    @Test
     public void incorrectPassword() {
-        assertEquals(false, MainActivity.validate("Admin", "Passwrd"));
+        ArrayList<String> cred = MainActivity.validate("Admin", "badpassword");
+        assertEquals(1, cred.size());
     }
+
+    @Test
+    public void correctUsername() {
+        ArrayList<String> cred = MainActivity.validate("Adm1n", "Password");
+        assertEquals(1, cred.size());
+    }
+
+    @Test
+    public void incorrectUsernameAndPassword() {
+        ArrayList<String> cred = MainActivity.validate("ad", "pas");
+        assertEquals(0, cred.size());
+    }
+
+    @Test
+    public void correctUsernameAndPassword() {
+        ArrayList<String> cred = MainActivity.validate("Admin", "Password");
+        assertEquals(2, cred.size());
+    }
+
 }

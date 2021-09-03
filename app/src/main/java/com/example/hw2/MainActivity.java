@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -44,9 +45,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public static boolean validate(String name, String pass) {
-        boolean valid_username = false;
-        boolean valid_password = false;
+    public static ArrayList<String> validate(String name, String pass) {
+        ArrayList<String> cred = new ArrayList<String>(2);
+        cred.add(null);
+        cred.add(null);
 
         Iterator i = credentials.entrySet().iterator();
         while (i.hasNext()) {
@@ -55,14 +57,23 @@ public class MainActivity extends AppCompatActivity {
             String username = credential.get(0);
             String password = credential.get(1);
 
-            if (username.equals(name) && password.equals(pass)) {
-                valid_username = true;
-                valid_password = true;
-                break;
+            if(username.equals(name) && password.equals(pass)){
+                cred.set(0, credential.get(0));
+                cred.set(1, credential.get(1));
+                return cred;
+            } else if (username.equals(name)){
+                cred.set(0, credential.get(0));
+            }else if (password.equals(pass)){
+                cred.set(1, credential.get(1));
+            } else {
+                continue;
             }
+
         }
 
-        return valid_username && valid_password;
+        cred.removeAll(Collections.singleton(null));
+
+        return cred;
     }
 
 
@@ -105,20 +116,21 @@ public class MainActivity extends AppCompatActivity {
                 String pass = password.getText().toString();
 
                 if(name.isEmpty() && pass.isEmpty()){
-                    Toast.makeText(MainActivity.this, "Please enter a Username and Password.", Toast.LENGTH_SHORT).show();
+                    username.setError("This field cannot be blank");
+                    password.setError("This field cannot be blank");
                 }
 
                 if (name.isEmpty()) {
-                    Toast.makeText(MainActivity.this, "Please enter a Username.", Toast.LENGTH_SHORT).show();
+                    username.setError("This field cannot be blank");
                 }
 
                 if (pass.isEmpty()) {
-                    Toast.makeText(MainActivity.this, "Please enter a Password.", Toast.LENGTH_SHORT).show();
+                    password.setError("This field cannot be blank");
                 }
 
-                boolean isValid = validate(name, pass);
-
-                if (isValid) {
+                ArrayList<String> cred = validate(name, pass);
+                System.out.println(cred);
+                if (cred.size() == 2) {
                     ArrayList<String> user = getUser(name, pass);
                     setContentView(R.layout.activity_posts);
                     textViewResult = findViewById(R.id.text_view_result);
@@ -160,6 +172,30 @@ public class MainActivity extends AppCompatActivity {
                             textViewResult.setText(t.getMessage());
                         }
                     });
+                } else {
+                    if (cred.size() == 0){
+                        username.setError("Your username is incorrect");
+                        password.setError("Your password is incorrect");
+                    } else {
+                        boolean isName = false;
+                        String val = cred.get(0);
+                        Iterator i = credentials.entrySet().iterator();
+                        while (i.hasNext()) {
+                            Map.Entry mapElement = (Map.Entry) i.next();
+                            ArrayList<String> credential = (ArrayList<String>) mapElement.getValue();
+                            String username = credential.get(0);
+                            if (username.equals(val)) {
+                                isName = true;
+                                break;
+                            }
+                        }
+
+                        if (!isName) {
+                            username.setError("Your username is incorrect");
+                        } else {
+                            password.setError("Your password is incorrect");
+                        }
+                    }
                 }
             }
         });
